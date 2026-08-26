@@ -1,6 +1,7 @@
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 import { WebSocketServer } from 'ws';
 import { initDatabase, db } from './db.js';
 import { eventRoom } from './eventRoom.js';
@@ -12,6 +13,13 @@ import { quizApp } from './routes/quiz.js';
 initDatabase();
 
 const app = new Hono();
+
+// Enable CORS for Vercel and external client origins
+app.use('*', cors({
+  origin: '*',
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Mount REST Route Modules
 app.route('/api/auth', authApp);
