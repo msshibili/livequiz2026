@@ -13,15 +13,16 @@ export default function AdminLogin({ onLoginSuccess }) {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/admin-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
+      const text = await res.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (e) {
+        throw new Error('Backend API Server is offline. Please deploy on Render.com or start Node.js server (npm start).');
+      }
 
-      const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || 'Authentication failed.');
+        throw new Error(data.message || 'Authentication failed. Please check credentials or backend server.');
       }
 
       localStorage.setItem('ssf_admin_token', data.adminToken);

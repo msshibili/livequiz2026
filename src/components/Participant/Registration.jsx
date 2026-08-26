@@ -17,14 +17,15 @@ export default function Registration({ onRegistered }) {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/register-participant', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ displayName, gender, phone })
-      });
+      const text = await res.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (e) {
+        throw new Error('Backend API Server is offline. Please deploy on Render.com or start Node.js server (npm start).');
+      }
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Registration failed.');
+      if (!res.ok) throw new Error(data.message || 'Registration failed. Please check backend server.');
 
       localStorage.setItem('ssf_participant_token', data.participant.authToken);
       localStorage.setItem('ssf_participant_data', JSON.stringify(data.participant));
