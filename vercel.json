@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://aluminum-virtually-seventh-mails.trycloudflare.com/api/:path*"
+      "destination": "https://livequiz2026.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
