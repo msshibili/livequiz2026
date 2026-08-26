@@ -76,8 +76,24 @@ export default function QuestionScreen({ participant }) {
             <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '700' }}>
               QUESTION #{currentQuestion.question_number} • {currentQuestion.category || 'General'}
             </div>
-            <div style={{ fontSize: '0.82rem', color: 'var(--accent-gold)', marginTop: '2px', fontWeight: '600' }}>
-              {currentQuestion.max_marks} Base Marks (-1 pt per second elapsed)
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+              <span style={{
+                fontSize: '0.85rem',
+                color: '#fbbf24',
+                fontWeight: '700',
+                background: 'rgba(251, 191, 36, 0.15)',
+                border: '1px solid rgba(251, 191, 36, 0.4)',
+                padding: '3px 10px',
+                borderRadius: '9999px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                ⭐ Question Points: {currentQuestion.max_marks} pts
+              </span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                (-1 pt/sec response deduction)
+              </span>
             </div>
           </div>
 
@@ -175,25 +191,32 @@ export default function QuestionScreen({ participant }) {
             background: 'rgba(16, 185, 129, 0.15)',
             border: '1px solid rgba(16, 185, 129, 0.4)',
             color: '#34d399',
-            padding: '14px 18px',
-            borderRadius: '10px',
+            padding: '16px 20px',
+            borderRadius: '12px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             fontSize: '0.9rem',
             flexWrap: 'wrap',
-            gap: '8px'
+            gap: '12px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Lock size={16} />
+              <Lock size={18} />
               <span>Option <strong>{selectedOption}</strong> submitted & locked!</span>
             </div>
 
             {userSubmission && (
-              <div style={{ fontWeight: '800', color: '#fbbf24', fontSize: '0.95rem' }}>
-                Calculated Score: +{userSubmission.score} pts
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginLeft: '6px', fontWeight: '400' }}>
-                  (-{userSubmission.elapsedSec ?? Math.floor((userSubmission.responseTimeMs || 0) / 1000)} pts for {userSubmission.elapsedSec ?? Math.floor((userSubmission.responseTimeMs || 0) / 1000)}s elapsed)
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  Question Score: <strong style={{ color: '#fbbf24' }}>+{userSubmission.score} pts</strong>
+                </span>
+                <span style={{ color: 'var(--border-subtle)' }}>|</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  Previous: <strong>{userSubmission.previousScore || 0} pts</strong>
+                </span>
+                <span style={{ color: 'var(--border-subtle)' }}>→</span>
+                <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#38bdf8' }}>
+                  New Total: {(userSubmission.newTotalScore ?? ((userSubmission.previousScore || 0) + userSubmission.score))} pts
                 </span>
               </div>
             )}

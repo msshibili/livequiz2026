@@ -383,7 +383,20 @@ export default function LiveControlRoom({ adminToken }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
               <div>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>PUBLISHED QUESTION</span>
-                <h3 style={{ fontSize: '1.2rem', marginTop: '2px' }}>Question #{currentQuestion.question_number}</h3>
+                <h3 style={{ fontSize: '1.2rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  Question #{currentQuestion.question_number}
+                  <span style={{
+                    fontSize: '0.78rem',
+                    color: '#fbbf24',
+                    fontWeight: '700',
+                    background: 'rgba(251, 191, 36, 0.15)',
+                    border: '1px solid rgba(251, 191, 36, 0.3)',
+                    padding: '2px 8px',
+                    borderRadius: '6px'
+                  }}>
+                    ⭐ {currentQuestion.max_marks} pts
+                  </span>
+                </h3>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span className="badge badge-live" style={{ fontSize: '0.8rem' }}>
@@ -460,7 +473,7 @@ export default function LiveControlRoom({ adminToken }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '6px 10px',
+                    padding: '8px 12px',
                     borderRadius: '6px',
                     background: item.isCorrect ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
                     border: item.isCorrect ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(239, 68, 68, 0.2)',
@@ -472,8 +485,13 @@ export default function LiveControlRoom({ adminToken }) {
                       <span style={{ color: 'var(--text-muted)' }}>Option {item.selectedAnswer}</span>
                     </div>
 
-                    <div style={{ color: item.isCorrect ? '#34d399' : '#f87171', fontWeight: '700', fontSize: '0.78rem' }}>
-                      {item.isCorrect ? `Correct (+${item.score ?? 0} pts)` : 'Incorrect (0 pts)'}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem' }}>
+                      <span style={{ color: item.isCorrect ? '#34d399' : '#f87171', fontWeight: '700' }}>
+                        {item.isCorrect ? `+${item.score ?? 0} pts` : '0 pts'}
+                      </span>
+                      <span style={{ color: 'var(--text-dim)' }}>
+                        (Prev: {item.previousScore || 0} → <strong style={{ color: '#38bdf8' }}>Total: {item.newTotalScore ?? ((item.previousScore || 0) + (item.score || 0))} pts</strong>)
+                      </span>
                     </div>
                   </div>
                 ))

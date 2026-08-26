@@ -65,32 +65,62 @@ export default function QuestionResult({ participant, cumulativeLeaderboard }) {
         {/* Score & Time Deduction Stats */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-          gap: '16px',
-          marginBottom: '28px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+          gap: '14px',
+          marginBottom: '20px'
         }}>
-          <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Points Earned</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: '900', color: isCorrect ? '#fbbf24' : 'var(--text-muted)', marginTop: '4px' }}>
+          <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px 12px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Question Score</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: '900', color: isCorrect ? '#fbbf24' : 'var(--text-muted)', marginTop: '4px' }}>
               +{scoreEarned} pts
             </div>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Time Deduction</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: '900', color: isCorrect ? '#f87171' : 'var(--text-muted)', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-              -{userSubmission?.elapsedSec ?? (responseTimeSec ? Math.floor(parseFloat(responseTimeSec)) : 0)} pts
+          <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px 12px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Previous Total</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#94a3b8', marginTop: '4px' }}>
+              {userSubmission?.previousScore || 0} pts
+            </div>
+          </div>
+
+          <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px 12px', borderRadius: '12px', border: '1px solid var(--border-subtle)', borderLeft: '3px solid #38bdf8' }}>
+            <div style={{ fontSize: '0.75rem', color: '#38bdf8', textTransform: 'uppercase', fontWeight: '700' }}>Cumulative Total</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#38bdf8', marginTop: '4px' }}>
+              {(userSubmission?.newTotalScore ?? ((userSubmission?.previousScore || 0) + scoreEarned))} pts
             </div>
           </div>
 
           {responseTimeSec && (
-            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Response Time</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: '900', color: '#a78bfa', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px 12px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Speed</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#a78bfa', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>
                 {responseTimeSec}s
               </div>
             </div>
           )}
+        </div>
+
+        {/* Score Accumulation Breakdown Banner */}
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)',
+          border: '1px solid var(--accent-primary)',
+          borderRadius: '12px',
+          padding: '14px 20px',
+          marginBottom: '28px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          fontSize: '0.92rem',
+          flexWrap: 'wrap'
+        }}>
+          <span style={{ color: 'var(--text-muted)' }}>Previous Score: <strong style={{ color: '#fff' }}>{userSubmission?.previousScore || 0} pts</strong></span>
+          <span style={{ color: '#fbbf24', fontWeight: '800' }}>+</span>
+          <span style={{ color: 'var(--text-muted)' }}>This Question: <strong style={{ color: '#fbbf24' }}>+{scoreEarned} pts</strong></span>
+          <span style={{ color: '#38bdf8', fontWeight: '800' }}>=</span>
+          <span style={{ color: '#38bdf8', fontWeight: '900', fontSize: '1.05rem' }}>
+            New Total: {(userSubmission?.newTotalScore ?? ((userSubmission?.previousScore || 0) + scoreEarned))} pts
+          </span>
         </div>
 
         {/* Explanation Card */}

@@ -77,12 +77,23 @@ class LiveEventRoom {
         const subRow = db.prepare('SELECT * FROM submissions WHERE question_id = ? AND participant_id = ?').get(this.currentQuestion.id, participantData.id);
         const resRow = db.prepare('SELECT * FROM question_results WHERE question_id = ? AND participant_id = ?').get(this.currentQuestion.id, participantData.id);
         if (subRow) {
+          const prevRow = db.prepare(`
+            SELECT COALESCE(SUM(score), 0) as prev_total
+            FROM question_results
+            WHERE participant_id = ? AND question_id != ?
+          `).get(participantData.id, this.currentQuestion.id);
+          const previousScore = prevRow ? prevRow.prev_total : 0;
+          const currentScore = resRow ? resRow.score : 0;
+
           existingSubmission = {
             participantId: participantData.id,
             displayName: participantData.displayName || 'Participant',
             selectedAnswer: subRow.selected_answer,
             isCorrect: resRow ? resRow.is_correct : 0,
-            score: resRow ? resRow.score : 0,
+            score: currentScore,
+            previousScore,
+            newTotalScore: previousScore + currentScore,
+            questionMaxMarks: this.currentQuestion ? this.currentQuestion.max_marks : 10,
             speedBonus: resRow ? resRow.speed_bonus : 0,
             responseTimeMs: resRow ? resRow.response_time_ms : 0,
             serverReceivedAt: subRow.server_received_at
@@ -367,10 +378,12 @@ class LiveEventRoom {
       type: 'QUESTION_CLOSED',
       payload: {
         questionId: this.currentQuestion.id,
+        questionNumber: this.currentQuestion.question_number,
+        questionMaxMarks: this.currentQuestion.max_marks,
         correctAnswer: this.currentQuestion.correct_answer,
         explanation: this.currentQuestion.explanation,
-        fastestCorrect: this.fastestCorrect.slice(0, 3),
-        cumulativeLeaderboard: cumulativeLeaderboard.slice(0, 20),
+        fastestCorrect: this.fastestCorrect.slice(0, 5),
+        cumulativeLeaderboard: cumulativeLeaderboard.slice(0, 50),
         serverTime: Date.now()
       }
     });
@@ -409,12 +422,24 @@ class LiveEventRoom {
     const participant = db.prepare('SELECT * FROM participants WHERE id = ?').get(participantId);
     const displayName = participant ? participant.display_name : 'Participant';
 
+    const prevScoreRow = db.prepare(`
+      SELECT COALESCE(SUM(score), 0) as prev_total
+      FROM question_results
+      WHERE participant_id = ? AND question_id != ?
+    `).get(participantId, questionId);
+
+    const previousScore = prevScoreRow ? prevScoreRow.prev_total : 0;
+    const newTotalScore = previousScore + scoringResult.score;
+
     const submissionEntry = {
       participantId,
       displayName,
       selectedAnswer,
       isCorrect: scoringResult.isCorrect,
       score: scoringResult.score,
+      previousScore,
+      newTotalScore,
+      questionMaxMarks: this.currentQuestion ? this.currentQuestion.max_marks : 10,
       speedBonus: 0,
       elapsedSec: scoringResult.elapsedSec,
       responseTimeMs: scoringResult.responseTimeMs,
@@ -457,6 +482,8 @@ class LiveEventRoom {
         participantId,
         displayName,
         score: scoringResult.score,
+        previousScore,
+        newTotalScore,
         responseTimeSec: (scoringResult.responseTimeMs / 1000).toFixed(2)
       });
       this.fastestCorrect.sort((a, b) => parseFloat(a.responseTimeSec) - parseFloat(b.responseTimeSec));
@@ -468,6 +495,8 @@ class LiveEventRoom {
       questionNumber: this.currentQuestion.question_number,
       isCorrect: scoringResult.isCorrect,
       score: scoringResult.score,
+      previousScore,
+      newTotalScore,
       elapsedSec: scoringResult.elapsedSec,
       selectedAnswer
     });
