@@ -1,4 +1,5 @@
 import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
 import { WebSocketServer } from 'ws';
 import { initDatabase, db } from './db.js';
@@ -19,15 +20,19 @@ app.route('/api/quiz', quizApp);
 
 app.get('/api/health', (c) => c.json({ status: 'ok', serverTime: Date.now() }));
 
-const PORT = 3001;
+// Serve Frontend Static Files & SPA Fallback for Single-Server Production Deployment
+app.use('/*', serveStatic({ root: './dist' }));
+app.get('*', serveStatic({ path: './dist/index.html' }));
+
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
 
 // Launch Hono Node server
 const server = serve({
   fetch: app.fetch,
   port: PORT
 }, (info) => {
-  console.log(`⚡ Live Competitive Quiz Server running on http://localhost:${info.port}`);
-  console.log(`🔌 WebSocket Server active on ws://localhost:${info.port}/ws`);
+  console.log(`⚡ Live Competitive Quiz Server running on port ${info.port}`);
+  console.log(`🔌 WebSocket Server active on /ws`);
   console.log(`🔒 Secret Admin Control Room Route: /control-room-x7`);
 });
 
