@@ -37,6 +37,29 @@ export default function AuditLogs({ adminToken }) {
         </p>
       </div>
 
+      {/* Full Database Backup & Restore Card */}
+      <div className="glass-panel" style={{ padding: '18px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h3 style={{ fontSize: '1.05rem', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Shield size={18} color="var(--accent-success)" /> Complete System Backup & Persistence
+          </h3>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: 0 }}>
+            All participants, questions, quizzes, and scores are automatically saved. Download a `.json` backup anytime for safe offline storage.
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <a
+            href="/api/admin/export-db-json"
+            download
+            className="btn btn-primary"
+            style={{ fontSize: '0.85rem', padding: '8px 16px', textDecoration: 'none' }}
+          >
+            Download Full Database Backup (.json)
+          </a>
+        </div>
+      </div>
+
       <div className="glass-panel" style={{ overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
           <thead>
