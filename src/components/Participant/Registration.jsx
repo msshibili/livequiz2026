@@ -17,6 +17,12 @@ export default function Registration({ onRegistered }) {
     setLoading(true);
 
     try {
+      const res = await fetch('/api/auth/register-participant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ displayName, gender, phone })
+      });
+
       const text = await res.text();
       let data = {};
       try {
