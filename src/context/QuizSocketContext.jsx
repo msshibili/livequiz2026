@@ -29,7 +29,7 @@ export function QuizSocketProvider({ children }) {
 
     let wsUrl = '';
     if (window.location.host.includes('vercel.app')) {
-      wsUrl = 'wss://livequiz2026.onrender.com/ws';
+      wsUrl = 'wss://aluminum-virtually-seventh-mails.trycloudflare.com/ws';
     } else {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       wsUrl = `${protocol}//${window.location.host}/ws`;
