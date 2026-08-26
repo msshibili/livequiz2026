@@ -42,6 +42,15 @@ const server = serve({
   console.log(`⚡ Live Competitive Quiz Server running on port ${info.port}`);
   console.log(`🔌 WebSocket Server active on /ws`);
   console.log(`🔒 Secret Admin Control Room Route: /control-room-x7`);
+
+  // Automatic Anti-Sleep Self-Keepalive Heartbeat (Prevents Render Free Tier Cold Starts)
+  const RENDER_URL = process.env.RENDER_EXTERNAL_URL || 'https://livequiz2026.onrender.com';
+  setInterval(() => {
+    fetch(`${RENDER_URL}/api/health`)
+      .then(r => r.json())
+      .then(d => console.log(`💓 [Keepalive Heartbeat] Server active at ${new Date().toISOString()}`))
+      .catch(() => {});
+  }, 9 * 60 * 1000); // Pings every 9 minutes to keep Render active 24/7
 });
 
 // Attach WebSocket Server

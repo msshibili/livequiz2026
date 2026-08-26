@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import fs from 'fs';
 
 class PureJSDatabase {
   constructor() {
@@ -13,6 +14,43 @@ class PureJSDatabase {
       question_results: new Map(),
       leaderboard_snapshots: new Map()
     };
+    this._saveTimer = null;
+  }
+
+  saveToDisk() {
+    try {
+      const data = {};
+      for (const [key, map] of Object.entries(this.tables)) {
+        data[key] = Array.from(map.entries());
+      }
+      fs.writeFileSync('./db_store.json', JSON.stringify(data));
+    } catch (e) {
+      console.error('Failed to persist DB to disk:', e);
+    }
+  }
+
+  loadFromDisk() {
+    try {
+      if (fs.existsSync('./db_store.json')) {
+        const raw = fs.readFileSync('./db_store.json', 'utf8');
+        const data = JSON.parse(raw);
+        for (const [key, entries] of Object.entries(data)) {
+          if (this.tables[key]) {
+            this.tables[key] = new Map(entries);
+          }
+        }
+        console.log('💾 Database state restored successfully from db_store.json');
+        return true;
+      }
+    } catch (e) {
+      console.error('Failed to load DB from disk:', e);
+    }
+    return false;
+  }
+
+  saveDebounced() {
+    if (this._saveTimer) clearTimeout(this._saveTimer);
+    this._saveTimer = setTimeout(() => this.saveToDisk(), 1000);
   }
 
   exec(sql) {}
@@ -24,7 +62,11 @@ class PureJSDatabase {
 
     return {
       run(...args) {
-        return self.executeRun(cleanSql, args);
+        const res = self.executeRun(cleanSql, args);
+        if (res && res.changes > 0) {
+          self.saveDebounced();
+        }
+        return res;
       },
       get(...args) {
         return self.executeGet(cleanSql, args);
@@ -400,7 +442,10 @@ const db = new PureJSDatabase();
 
 export function initDatabase() {
   db.exec('');
-  seedDefaultAdminAndQuiz();
+  const restored = db.loadFromDisk();
+  if (!restored || db.tables.admin_users.size === 0) {
+    seedDefaultAdminAndQuiz();
+  }
 }
 
 function hashPassword(password) {
