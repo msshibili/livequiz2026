@@ -21,13 +21,41 @@ authApp.post('/register-participant', async (c) => {
     }
 
     const maskedPhone = maskPhoneNumber(phone);
+    const cleanName = displayName.trim();
+
+    // Check if participant already exists by phone or name to handle re-login seamlessly
+    let existingParticipant = null;
+    if (phone && phone.trim() !== '') {
+      existingParticipant = db.prepare('SELECT * FROM participants WHERE phone_masked = ?').get(maskedPhone);
+    }
+    if (!existingParticipant) {
+      existingParticipant = db.prepare('SELECT * FROM participants WHERE LOWER(display_name) = ?').get(cleanName.toLowerCase());
+    }
+
+    if (existingParticipant) {
+      if (existingParticipant.status === 'disabled') {
+        db.prepare("UPDATE participants SET status = 'active' WHERE id = ?").run(existingParticipant.id);
+        existingParticipant.status = 'active';
+      }
+      return c.json({
+        success: true,
+        participant: {
+          id: existingParticipant.id,
+          displayName: existingParticipant.display_name,
+          gender: existingParticipant.gender,
+          phoneMasked: existingParticipant.phone_masked,
+          authToken: existingParticipant.auth_token
+        }
+      });
+    }
+
     const authToken = 'ptoken_' + crypto.randomBytes(16).toString('hex');
     const participantId = 'p_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
 
     db.prepare(`
       INSERT INTO participants (id, display_name, gender, phone_masked, auth_token, status, created_at)
       VALUES (?, ?, ?, ?, ?, 'active', ?)
-    `).run(participantId, displayName.trim(), gender.trim(), maskedPhone, authToken, Date.now());
+    `).run(participantId, cleanName, gender.trim(), maskedPhone, authToken, Date.now());
 
     // Broadcast live participant registration event to all Admin Control Room sessions!
     eventRoom.broadcastStatsUpdate();

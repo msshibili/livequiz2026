@@ -44,7 +44,7 @@ async function runBenchmark() {
   console.log(`1️⃣  Authenticating Admin for Control Room...`);
   const adminRes = await httpRequest('/api/auth/admin-login', 'POST', {
     username: 'admin',
-    password: 'adminSecretPassword123!'
+    password: 'Shibili@quizadmin23'
   });
 
   if (adminRes.status !== 200) {

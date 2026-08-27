@@ -350,31 +350,31 @@ adminApp.post('/scoring-simulator', async (c) => {
     scoringMode: mode
   });
 
-adminApp.get('/export-db-json', (c) => {
-  const data = {};
-  for (const [key, map] of Object.entries(db.tables)) {
-    data[key] = Array.from(map.entries());
-  }
-  return c.text(JSON.stringify(data, null, 2), 200, {
-    'Content-Type': 'application/json',
-    'Content-Disposition': `attachment; filename="livequiz_db_backup_${Date.now()}.json"`
-  });
-});
-
-adminApp.post('/import-db-json', async (c) => {
-  try {
-    const data = await c.req.json();
-    for (const [key, entries] of Object.entries(data)) {
-      if (db.tables[key] && Array.isArray(entries)) {
-        db.tables[key] = new Map(entries);
-      }
+  adminApp.get('/export-db-json', (c) => {
+    const data = {};
+    for (const [key, map] of Object.entries(db.tables)) {
+      data[key] = Array.from(map.entries());
     }
-    db.saveToDisk();
-    eventRoom.broadcastStatsUpdate();
-    return c.json({ success: true, message: 'Database restored successfully!' });
-  } catch (err) {
-    return c.json({ error: 'IMPORT_FAILED', message: err.message }, 400);
-  }
-});
+    return c.text(JSON.stringify(data, null, 2), 200, {
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="livequiz_db_backup_${Date.now()}.json"`
+    });
+  });
 
-export { adminApp };
+  adminApp.post('/import-db-json', async (c) => {
+    try {
+      const data = await c.req.json();
+      for (const [key, entries] of Object.entries(data)) {
+        if (db.tables[key] && Array.isArray(entries)) {
+          db.tables[key] = new Map(entries);
+        }
+      }
+      db.saveToDisk();
+      eventRoom.broadcastStatsUpdate();
+      return c.json({ success: true, message: 'Database restored successfully!' });
+    } catch (err) {
+      return c.json({ error: 'IMPORT_FAILED', message: err.message }, 400);
+    }
+  });
+
+  export { adminApp };

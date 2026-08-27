@@ -23,7 +23,7 @@ class PureJSDatabase {
       for (const [key, map] of Object.entries(this.tables)) {
         data[key] = Array.from(map.entries());
       }
-      fs.writeFileSync('./db_store.json', JSON.stringify(data));
+      fs.writeFileSync('./db_store.json', JSON.stringify(data, null, 2));
     } catch (e) {
       console.error('Failed to persist DB to disk:', e);
     }
@@ -50,7 +50,7 @@ class PureJSDatabase {
 
   saveDebounced() {
     if (this._saveTimer) clearTimeout(this._saveTimer);
-    this._saveTimer = setTimeout(() => this.saveToDisk(), 1000);
+    this._saveTimer = setTimeout(() => this.saveToDisk(), 500);
   }
 
   exec(sql) {}
@@ -64,7 +64,7 @@ class PureJSDatabase {
       run(...args) {
         const res = self.executeRun(cleanSql, args);
         if (res && res.changes > 0) {
-          self.saveDebounced();
+          self.saveToDisk();
         }
         return res;
       },
@@ -129,18 +129,48 @@ class PureJSDatabase {
     }
 
     if (sql.startsWith('INSERT INTO questions')) {
-      const [
-        id, quiz_id, question_number, text, opt_a, opt_b, opt_c, opt_d,
-        correct, max_marks, duration_sec, speed_bonus_max, wrong_penalty, unanswered_score,
-        mode, explanation, category, difficulty, status, created_at
-      ] = args;
+      let id, quiz_id, question_number, text, opt_a, opt_b, opt_c, opt_d,
+          correct, max_marks, duration_sec, speed_bonus_max, wrong_penalty, unanswered_score,
+          mode, explanation, category, difficulty, status, created_at;
+
+      if (args.length === 20) {
+        [
+          id, quiz_id, question_number, text, opt_a, opt_b, opt_c, opt_d,
+          correct, max_marks, duration_sec, speed_bonus_max, wrong_penalty, unanswered_score,
+          mode, explanation, category, difficulty, status, created_at
+        ] = args;
+      } else {
+        [
+          id, quiz_id, question_number, text, opt_a, opt_b, opt_c, opt_d,
+          correct, max_marks, duration_sec, speed_bonus_max, explanation, category, difficulty, status, created_at
+        ] = args;
+        wrong_penalty = 0;
+        unanswered_score = 0;
+        mode = 'LINEAR_SPEED';
+      }
 
       this.tables.questions.set(id, {
-        id, quiz_id: quiz_id || 'default_quiz', question_number: question_number || 1, version: 1, question_text: text || '',
-        option_a: opt_a || '', option_b: opt_b || '', option_c: opt_c || '', option_d: opt_d || '',
-        correct_answer: correct || 'A', max_marks: max_marks || 100, duration_sec: duration_sec || 20, speed_bonus_max: speed_bonus_max || 100,
-        wrong_penalty: wrong_penalty || 0, unanswered_score: unanswered_score || 0, scoring_mode: mode || 'LINEAR_SPEED',
-        explanation: explanation || '', category: category || 'General', difficulty: difficulty || 'Medium', status: status || 'DRAFT', created_at: created_at || Date.now()
+        id,
+        quiz_id: quiz_id || 'default_quiz',
+        question_number: question_number || 1,
+        version: 1,
+        question_text: text || '',
+        option_a: opt_a || '',
+        option_b: opt_b || '',
+        option_c: opt_c || '',
+        option_d: opt_d || '',
+        correct_answer: correct || 'A',
+        max_marks: max_marks || 100,
+        duration_sec: duration_sec || 20,
+        speed_bonus_max: speed_bonus_max || 100,
+        wrong_penalty: wrong_penalty || 0,
+        unanswered_score: unanswered_score || 0,
+        scoring_mode: mode || 'LINEAR_SPEED',
+        explanation: explanation || '',
+        category: category || 'General',
+        difficulty: difficulty || 'Medium',
+        status: status || 'READY',
+        created_at: created_at || Date.now()
       });
       return { changes: 1 };
     }
@@ -161,11 +191,16 @@ class PureJSDatabase {
     }
 
     if (sql.startsWith('UPDATE questions SET question_number = ?') || sql.startsWith('UPDATE questions SET quiz_id = ?')) {
-      const [
-        q_quiz_id, num, ver, text, a, b, c, d, correct, marks, dur, bonus, penalty, unans,
-        mode, exp, cat, diff, status, id
-      ] = args.length === 20 ? args : [undefined, ...args];
+      let q_quiz_id, num, ver, text, a, b, c, d, correct, marks, dur, bonus, penalty, unans, mode, exp, cat, diff, status, id;
       
+      if (args.length === 19) {
+        [num, ver, text, a, b, c, d, correct, marks, dur, bonus, penalty, unans, mode, exp, cat, diff, status, id] = args;
+      } else if (args.length === 20) {
+        [q_quiz_id, num, ver, text, a, b, c, d, correct, marks, dur, bonus, penalty, unans, mode, exp, cat, diff, status, id] = args;
+      } else {
+        id = args[args.length - 1];
+      }
+
       const targetId = id || args[args.length - 1];
       const q = this.tables.questions.get(targetId);
       if (q) {
@@ -454,7 +489,7 @@ function hashPassword(password) {
 
 function seedDefaultAdminAndQuiz() {
   const adminId = 'admin_super_1';
-  const pwdHash = hashPassword('adminSecretPassword123!');
+  const pwdHash = hashPassword('Shibili@quizadmin23');
   db.prepare(`
     INSERT INTO admin_users (id, username, password_hash, role, created_at)
     VALUES (?, ?, ?, ?, ?)
@@ -567,12 +602,12 @@ function seedDefaultAdminAndQuiz() {
         option_a, option_b, option_c, option_d, correct_answer,
         max_marks, duration_sec, speed_bonus_max, wrong_penalty, unanswered_score,
         scoring_mode, explanation, category, difficulty, status, created_at
-      ) VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 'LINEAR_SPEED', ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       q.id, q.quiz_id, q.question_number, q.question_text,
       q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer,
-      q.max_marks, q.duration_sec, q.speed_bonus_max, q.explanation,
-      q.category, q.difficulty, q.status, Date.now()
+      q.max_marks, q.duration_sec, q.speed_bonus_max, 0, 0,
+      'LINEAR_SPEED', q.explanation, q.category, q.difficulty, q.status, Date.now()
     );
   }
 }

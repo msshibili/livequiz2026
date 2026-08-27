@@ -1,0 +1,163 @@
+{
+  "participants": [],
+  "admin_users": [
+    [
+      "admin_super_1",
+      {
+        "id": "admin_super_1",
+        "username": "admin",
+        "password_hash": "905d255678051d069f222d5dc8a1ef23051b5d4a34460cc8e1eefbceecc10101",
+        "role": "admin",
+        "created_at": 1787837114342
+      }
+    ]
+  ],
+  "admin_sessions": [],
+  "admin_actions": [],
+  "quizzes": [
+    [
+      "default_quiz",
+      {
+        "id": "default_quiz",
+        "title": "Live Quiz Competition by SSF Kurukathani Unit",
+        "status": "REGISTRATION_OPEN",
+        "created_at": 1787837114344
+      }
+    ]
+  ],
+  "questions": [
+    [
+      "q_seed_1",
+      {
+        "id": "q_seed_1",
+        "quiz_id": "default_quiz",
+        "question_number": 1,
+        "version": 1,
+        "question_text": "Which state is known as the Land of 5 Rivers in India?",
+        "option_a": "Punjab",
+        "option_b": "Kerala",
+        "option_c": "Tamil Nadu",
+        "option_d": "Gujarat",
+        "correct_answer": "A",
+        "max_marks": 100,
+        "duration_sec": 20,
+        "speed_bonus_max": 100,
+        "wrong_penalty": 0,
+        "unanswered_score": 0,
+        "scoring_mode": "LINEAR_SPEED",
+        "explanation": "Punjab derives its name from five rivers: Beas, Jhelum, Chenab, Ravi, and Sutlej.",
+        "category": "General Knowledge",
+        "difficulty": "Easy",
+        "status": "READY",
+        "created_at": 1787837114344
+      }
+    ],
+    [
+      "q_seed_2",
+      {
+        "id": "q_seed_2",
+        "quiz_id": "default_quiz",
+        "question_number": 2,
+        "version": 1,
+        "question_text": "What is the capital city of India?",
+        "option_a": "Mumbai",
+        "option_b": "New Delhi",
+        "option_c": "Kolkata",
+        "option_d": "Chennai",
+        "correct_answer": "B",
+        "max_marks": 100,
+        "duration_sec": 20,
+        "speed_bonus_max": 100,
+        "wrong_penalty": 0,
+        "unanswered_score": 0,
+        "scoring_mode": "LINEAR_SPEED",
+        "explanation": "New Delhi was declared as the capital of India in 1911.",
+        "category": "General Knowledge",
+        "difficulty": "Easy",
+        "status": "READY",
+        "created_at": 1787837114345
+      }
+    ],
+    [
+      "q_seed_3",
+      {
+        "id": "q_seed_3",
+        "quiz_id": "default_quiz",
+        "question_number": 3,
+        "version": 1,
+        "question_text": "Which element has the chemical symbol \"O\"?",
+        "option_a": "Gold",
+        "option_b": "Osmium",
+        "option_c": "Oxygen",
+        "option_d": "Zinc",
+        "correct_answer": "C",
+        "max_marks": 100,
+        "duration_sec": 20,
+        "speed_bonus_max": 100,
+        "wrong_penalty": 0,
+        "unanswered_score": 0,
+        "scoring_mode": "LINEAR_SPEED",
+        "explanation": "Oxygen is represented by the symbol O and atomic number 8.",
+        "category": "Science",
+        "difficulty": "Easy",
+        "status": "READY",
+        "created_at": 1787837114345
+      }
+    ],
+    [
+      "q_seed_4",
+      {
+        "id": "q_seed_4",
+        "quiz_id": "default_quiz",
+        "question_number": 4,
+        "version": 1,
+        "question_text": "Which organ pumps blood throughout the human body?",
+        "option_a": "Lungs",
+        "option_b": "Brain",
+        "option_c": "Liver",
+        "option_d": "Heart",
+        "correct_answer": "D",
+        "max_marks": 100,
+        "duration_sec": 20,
+        "speed_bonus_max": 100,
+        "wrong_penalty": 0,
+        "unanswered_score": 0,
+        "scoring_mode": "LINEAR_SPEED",
+        "explanation": "The heart is the primary organ responsible for circulating blood.",
+        "category": "Science",
+        "difficulty": "Easy",
+        "status": "READY",
+        "created_at": 1787837114345
+      }
+    ],
+    [
+      "q_seed_5",
+      {
+        "id": "q_seed_5",
+        "quiz_id": "default_quiz",
+        "question_number": 5,
+        "version": 1,
+        "question_text": "What is the largest planet in our solar system?",
+        "option_a": "Jupiter",
+        "option_b": "Saturn",
+        "option_c": "Mars",
+        "option_d": "Earth",
+        "correct_answer": "A",
+        "max_marks": 100,
+        "duration_sec": 20,
+        "speed_bonus_max": 100,
+        "wrong_penalty": 0,
+        "unanswered_score": 0,
+        "scoring_mode": "LINEAR_SPEED",
+        "explanation": "Jupiter is the largest planet, with a mass more than two and a half times that of all other planets combined.",
+        "category": "Science",
+        "difficulty": "Medium",
+        "status": "READY",
+        "created_at": 1787837114345
+      }
+    ]
+  ],
+  "submissions": [],
+  "question_results": [],
+  "leaderboard_snapshots": []
+}
